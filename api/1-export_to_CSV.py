@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""e python script to export data in CSV format"""
+"""Use python script to export data in CSV format"""
 
 
 if __name__ == "__main__":
@@ -26,4 +26,4 @@ if __name__ == "__main__":
             values.append("{}".format(employ_username))
             values.append("{}".format(task.get('completed')))
             values.append("{}".format(task.get('title')))
-            csv_writer.writerow(values)i
+            csv_writer.writerow(values)
