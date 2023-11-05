@@ -1,42 +1,32 @@
 #!/usr/bin/python3
-"""Module"""
+"""
+This uses REST api to record all task from employees
 
-import json
-import requests
+"""
+if __name__ == "__main__":
+    import requests
+    from sys import argv
+    import json
 
+    user_URL = 'https://jsonplaceholder.typicode.com/users'
+    all_employee = requests.get(user_URL).json()
 
-def get_employee_task(employee_id):
-    """Doc"""
-    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
-        .format(employee_id)
+    todo_dict = {}
+    for employee in all_employee:
+        tURL = 'https://jsonplaceholder.typicode.com/users/{}/todos'.format(
+            employee.get('id'))
+        all_tasks = requests.get(tURL).json()
 
-    user_info = requests.request('GET', user_url).json()
+        todo_tasks = []
+        for task in all_tasks:
+            task_dict = {}
+            task_dict["username"] = employee.get('username')
+            task_dict["task"] = task.get('title')
+            task_dict["completed"] = task.get('completed')
+            todo_tasks.append(task_dict)
+        todo_dict[employee.get('id')] = todo_tasks
+    json_string = json.dumps(todo_dict)
 
-    employee_username = user_info["username"]
-    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
-        .format(employee_id)
-    todos_info = requests.request('GET', todos_url).json()
-    return [
-        dict(zip(["task", "completed", "username"],
-                 [task["title"], task["completed"], employee_username]))
-        for task in todos_info]
-
-
-def get_employee_ids():
-    """Doc"""
-    users_url = "https://jsonplaceholder.typicode.com/users/"
-
-    users_info = requests.request('GET', users_url).json()
-    ids = list(map(lambda user: user["id"], users_info))
-    return ids
-
-
-if __name__ == '__main__':
-
-    employee_ids = get_employee_ids()
-
-    with open('todo_all_employees.json', "w") as file:
-        all_users = {}
-        for employee_id in employee_ids:
-            all_users[str(employee_id)] = get_employee_task(employee_id)
-        file.write(json.dumps(all_users))
+    filename = "todo_all_employees.json"
+    with open(filename, 'w') as f:
+        f.write(json_string)

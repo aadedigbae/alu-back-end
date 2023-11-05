@@ -1,27 +1,36 @@
 #!/usr/bin/python3
-""""Module"""
+"""
+Request from API; Return TODO list progress given employee ID
+Export this data to JSON
+"""
 
+from sys import argv
 import json
 import requests
-import sys
 
-if __name__ == '__main__':
-    employee_id = sys.argv[1]
-    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
-        .format(employee_id)
-    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
-        .format(employee_id)
 
-    user_info = requests.request('GET', user_url).json()
-    todos_info = requests.request('GET', todos_url).json()
+def JSON():
+    """return API data"""
+    users = requests.get("http://jsonplaceholder.typicode.com/users")
+    for u in users.json():
+        if u.get('id') == int(argv[1]):
+            USERNAME = (u.get('username'))
+            break
+    TASK_STATUS_TITLE = []
+    todos = requests.get("http://jsonplaceholder.typicode.com/todos")
+    for t in todos.json():
+        if t.get('userId') == int(argv[1]):
+            TASK_STATUS_TITLE.append((t.get('completed'), t.get('title')))
 
-    employee_username = user_info["username"]
+    """export to json"""
+    t = []
+    for task in TASK_STATUS_TITLE:
+        t.append({"task": task[1], "completed": task[0], "username": USERNAME})
+    data = {str(argv[1]): t}
+    filename = "{}.json".format(argv[1])
+    with open(filename, "w") as f:
+        json.dump(data, f)
 
-    todos_info_sorted = [
-        dict(zip(["task", "completed", "username"],
-                 [task["title"], task["completed"], employee_username]))
-        for task in todos_info]
 
-    user_dict = {str(employee_id): todos_info_sorted}
-    with open(str(employee_id) + '.json', "w") as file:
-        file.write(json.dumps(user_dict))
+if __name__ == "__main__":
+    JSON()

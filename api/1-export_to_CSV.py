@@ -1,29 +1,29 @@
 #!/usr/bin/python3
-"""Module"""
+"""e python script to export data in CSV format"""
 
-import requests
-import sys
 
-if __name__ == '__main__':
-    employee_id = sys.argv[1]
-    user_url = "https://jsonplaceholder.typicode.com/users/{}" \
-        .format(employee_id)
-    todos_url = "https://jsonplaceholder.typicode.com/users/{}/todos/" \
-        .format(employee_id)
+if __name__ == "__main__":
+    import requests
+    from sys import argv
+    import csv
 
-    user_info = requests.request('GET', user_url).json()
-    todos_info = requests.request('GET', todos_url).json()
+    user_URL = 'https://jsonplaceholder.typicode.com/users/{}'.format(argv[1])
+    employee = requests.get(user_URL).json()
+    employ_username = employee.get('username')
 
-    employee_name = user_info["name"]
-    employee_username = user_info["username"]
-    task_completed = list(filter(lambda obj:
-                                 (obj["completed"] is True), todos_info))
-    number_of_done_tasks = len(task_completed)
-    total_number_of_tasks = len(todos_info)
+    tasks_URL = 'https://jsonplaceholder.typicode.com/users/{}/todos'.format(
+        argv[1])
+    all_tasks = requests.get(tasks_URL).json()
 
-    with open(str(employee_id) + '.csv', "w") as file:
-        [file.write('"' + str(employee_id) + '",' +
-                    '"' + employee_username + '",' +
-                    '"' + str(task["completed"]) + '",' +
-                    '"' + task["title"] + '",' + "\n")
-         for task in todos_info]
+    filename = "{}.csv".format(argv[1])
+    with open(filename, 'w') as f:
+        f.write("")
+    for task in all_tasks:
+        with open(filename, 'a', newline='') as f:
+            csv_writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+            values = []
+            values.append("{}".format(argv[1]))
+            values.append("{}".format(employ_username))
+            values.append("{}".format(task.get('completed')))
+            values.append("{}".format(task.get('title')))
+            csv_writer.writerow(values)i
