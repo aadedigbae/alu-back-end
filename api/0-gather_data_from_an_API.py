@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-"""Use REST API for an employee OD, return
-the information about his/her TODO list progress"""
+"""Module"""
 
 import requests
 import sys
 
-""" Function to gather data from an API """
+
+"""Module"""
 
 if __name__ == '__main__':
     employee_id = sys.argv[1]
@@ -27,4 +27,3 @@ if __name__ == '__main__':
           format(employee_name, number_of_done_tasks, total_number_of_tasks))
 
     [print("\t " + task["title"]) for task in task_completed]
-    
